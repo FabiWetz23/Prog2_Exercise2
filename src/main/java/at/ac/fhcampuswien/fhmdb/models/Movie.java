@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class Movie {
 
+
     private final String id;
     private final String title;
     private final String description;
