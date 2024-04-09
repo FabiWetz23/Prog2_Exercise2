@@ -140,10 +140,9 @@ class HomeControllerTest {
         Genre genre = Genre.DRAMA;
 
         // when
-        List<Movie> actual = homeController.filterByGenre(homeController.observableMovies, genre);
-
+        List<Movie> actualMovies = MovieAPI.getAllMovies("",Genre.DRAMA,"","");
         // then
-        assertEquals(4, actual.size());
+        assertEquals(22, actualMovies.size());
     }
 
     @Test
