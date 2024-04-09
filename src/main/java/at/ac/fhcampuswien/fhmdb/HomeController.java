@@ -135,14 +135,33 @@ public class HomeController implements Initializable {
     }
 
     public void applyAllFilters(String searchQuery, Object genre, String releaseYear, String rating) {
-        List<Movie> filteredMovies = searchQuery.isEmpty() && genre == "No filter" && releaseYear == "Filter by Release Year" && rating == "Filter by rating" ? getAllMovies(null, null, null, null)
-                : getAllMovies(searchQuery.isEmpty() ? null : searchQuery,
-                genre == "No filter" ? null : (Genre) genre,
-                releaseYear == "Filter by Release Year" ? null : releaseYear,
-                rating == "Filter by rating" ? null : rating);
+        // Prüfen, ob der Suchbegriff leer ist und ihn in Kleinbuchstaben konvertieren
+        searchQuery = (searchQuery == null || searchQuery.isEmpty()) ? null : searchQuery.toLowerCase();
+
+        // Prüfen, ob das Genre "No filter" ist oder null ist
+        Genre selectedGenre = null;
+        if (genre != null && !genre.toString().equals("No filter")) {
+            if (genre instanceof Genre) {
+                selectedGenre = (Genre) genre;
+            } else {
+                throw new IllegalArgumentException("Invalid genre parameter");
+            }
+        }
+
+        // Die Filterparameter an die MovieAPI übergeben
+        List<Movie> filteredMovies = getAllMovies(
+                searchQuery,
+                selectedGenre,
+                (releaseYear != null && !releaseYear.isEmpty()) ? releaseYear : null,
+                (rating != null && !rating.isEmpty()) ? rating : null
+        );
+
+        // Die observableMovies-Liste aktualisieren
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
+
+
 
     public void searchBtnClicked(ActionEvent actionEvent) {
         String searchQuery = searchField.getText().trim().toLowerCase();

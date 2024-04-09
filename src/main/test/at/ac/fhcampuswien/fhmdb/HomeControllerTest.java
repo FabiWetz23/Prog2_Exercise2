@@ -5,14 +5,19 @@ import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import at.ac.fhcampuswien.fhmdb.api.MovieAPI;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Comparator;
+
 
 class HomeControllerTest {
     private static HomeController homeController;
+
     @BeforeAll
     static void init() {
         homeController = new HomeController();
@@ -27,40 +32,20 @@ class HomeControllerTest {
     @Test
     void if_not_yet_sorted_sort_is_applied_in_ascending_order() {
         // given
-        homeController.initializeState();
-        homeController.sortedState = SortedState.NONE;
+        HomeController homeController = new HomeController();
 
         // when
+        homeController.initializeState();
+        homeController.sortedState = SortedState.NONE;
         homeController.sortMovies();
 
         // then
-        List<Movie> expected = Arrays.asList(
-                new Movie(
-                        "Avatar",
-                        "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
-                        Arrays.asList(Genre.ANIMATION, Genre.DRAMA, Genre.ACTION)),
-                new Movie(
-                        "Life Is Beautiful",
-                        "When an open-minded Jewish librarian and his son become victims of the Holocaust, he uses a perfect mixture of will, humor, and imagination to protect his son from the dangers around their camp." ,
-                        Arrays.asList(Genre.DRAMA, Genre.ROMANCE)),
-                new Movie(
-                        "Puss in Boots",
-                        "An outlaw cat, his childhood egg-friend, and a seductive thief kitty set out in search for the eggs of the fabled Golden Goose to clear his name, restore his lost honor, and regain the trust of his mother and town.",
-                        Arrays.asList(Genre.COMEDY, Genre.FAMILY, Genre.ANIMATION)),
-                new Movie(
-                        "The Usual Suspects",
-                        "A sole survivor tells of the twisty events leading up to a horrific gun battle on a boat, which begin when five criminals meet at a seemingly random police lineup.",
-                        Arrays.asList(Genre.CRIME, Genre.DRAMA, Genre.MYSTERY)),
-                new Movie(
-                        "The Wolf of Wall Street",
-                        "Based on the true story of Jordan Belfort, from his rise to a wealthy stock-broker living the high life to his fall involving crime, corruption and the federal government.",
-                        Arrays.asList(Genre.DRAMA, Genre.ROMANCE, Genre.BIOGRAPHY))
-
-        );
-
-        assertEquals(expected, homeController.observableMovies);
-
+        List<Movie> actualMovies = homeController.observableMovies;
+        List<Movie> expectedMovies = MovieAPI.getAllMovies();
+        expectedMovies.sort(Comparator.comparing(Movie::getTitle)); // Sortieren der erwarteten Filme nach Titel
+        assertEquals(expectedMovies, actualMovies);
     }
+
 
     @Test
     void if_last_sort_ascending_next_sort_should_be_descending() {
@@ -133,7 +118,6 @@ class HomeControllerTest {
         );
 
         assertEquals(expected, homeController.observableMovies);
-
     }
 
     @Test
@@ -215,10 +199,11 @@ class HomeControllerTest {
         homeController.initializeState();
 
         // when
-        homeController.applyAllFilters("", "", "", "");
+        homeController.applyAllFilters("", null, "", "");
 
         // then
         assertEquals(homeController.allMovies, homeController.observableMovies);
     }
 
 }
+
