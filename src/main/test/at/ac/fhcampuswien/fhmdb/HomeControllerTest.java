@@ -215,7 +215,7 @@ class HomeControllerTest {
         homeController.initializeState();
 
         // when
-        homeController.applyAllFilters("", null);
+        homeController.applyAllFilters("", "", "", "");
 
         // then
         assertEquals(homeController.allMovies, homeController.observableMovies);
