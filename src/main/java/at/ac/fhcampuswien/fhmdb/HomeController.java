@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.api.MovieAPI;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
@@ -12,17 +13,21 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static at.ac.fhcampuswien.fhmdb.api.MovieAPI.getAllMovies;
 
 public class HomeController implements Initializable {
     @FXML
     public JFXButton searchBtn;
+
+    @FXML
+    public JFXButton resetBtn;
 
     @FXML
     public TextField searchField;
@@ -34,6 +39,11 @@ public class HomeController implements Initializable {
     public JFXComboBox genreComboBox;
 
     @FXML
+    public JFXComboBox releaseYearComboBox;
+
+    @FXML JFXComboBox ratingComboBox;
+
+    @FXML
     public JFXButton sortBtn;
 
     public List<Movie> allMovies;
@@ -42,6 +52,9 @@ public class HomeController implements Initializable {
 
     protected SortedState sortedState;
 
+    public static ArrayList<Label> titlesList = new ArrayList<Label>();
+    public static ArrayList<Label> descriptionsList = new ArrayList<Label>();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeState();
@@ -49,7 +62,9 @@ public class HomeController implements Initializable {
     }
 
     public void initializeState() {
-        allMovies = Movie.initializeMovies();
+        //allMovies = Movie.initializeMovies();
+
+        allMovies = getAllMovies();
         observableMovies.clear();
         observableMovies.addAll(allMovies); // add all movies to the observable list
         sortedState = SortedState.NONE;
@@ -63,23 +78,28 @@ public class HomeController implements Initializable {
         genreComboBox.getItems().add("No filter");  // add "no filter" to the combobox
         genreComboBox.getItems().addAll(genres);    // add all genres to the combobox
         genreComboBox.setPromptText("Filter by Genre");
+
+        releaseYearComboBox.setPromptText("Filter by Release Year");
+        Integer[] releaseYears = new Integer[78];
+        for (int i = 0; i < 78; i++) {
+            releaseYears[i] = 2023 - i;
+        }
+        //releaseYearComboBox.getItems().add("No filter");
+        releaseYearComboBox.getItems().addAll(releaseYears);
+
+        ratingComboBox.setPromptText("Filter by rating");
+        Double[] rating = new Double[]{1.00, 2.00, 3.00, 4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00};
+        ratingComboBox.getItems().addAll(rating);
     }
 
-    public void sortMovies(){
-        if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
-            sortMovies(SortedState.ASCENDING);
-        } else if (sortedState == SortedState.ASCENDING) {
-            sortMovies(SortedState.DESCENDING);
-        }
-    }
     // sort movies based on sortedState
     // by default sorted state is NONE
     // afterwards it switches between ascending and descending
-    public void sortMovies(SortedState sortDirection) {
-        if (sortDirection == SortedState.ASCENDING) {
+    public void sortMovies() {
+        if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle));
             sortedState = SortedState.ASCENDING;
-        } else {
+        } else if (sortedState == SortedState.ASCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
             sortedState = SortedState.DESCENDING;
         }
@@ -95,8 +115,8 @@ public class HomeController implements Initializable {
         return movies.stream()
                 .filter(Objects::nonNull)
                 .filter(movie ->
-                    movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    movie.getDescription().toLowerCase().contains(query.toLowerCase())
+                        movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                                movie.getDescription().toLowerCase().contains(query.toLowerCase())
                 )
                 .toList();
     }
@@ -114,17 +134,12 @@ public class HomeController implements Initializable {
                 .toList();
     }
 
-    public void applyAllFilters(String searchQuery, Object genre) {
-        List<Movie> filteredMovies = allMovies;
-
-        if (!searchQuery.isEmpty()) {
-            filteredMovies = filterByQuery(filteredMovies, searchQuery);
-        }
-
-        if (genre != null && !genre.toString().equals("No filter")) {
-            filteredMovies = filterByGenre(filteredMovies, Genre.valueOf(genre.toString()));
-        }
-
+    public void applyAllFilters(String searchQuery, Object genre, String releaseYear, String rating) {
+        List<Movie> filteredMovies = searchQuery.isEmpty() && genre == "No filter" && releaseYear == "Filter by Release Year" && rating == "Filter by rating" ? getAllMovies(null, null, null, null)
+                : getAllMovies(searchQuery.isEmpty() ? null : searchQuery,
+                genre == "No filter" ? null : (Genre) genre,
+                releaseYear == "Filter by Release Year" ? null : releaseYear,
+                rating == "Filter by rating" ? null : rating);
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
@@ -132,12 +147,60 @@ public class HomeController implements Initializable {
     public void searchBtnClicked(ActionEvent actionEvent) {
         String searchQuery = searchField.getText().trim().toLowerCase();
         Object genre = genreComboBox.getSelectionModel().getSelectedItem();
+        String releaseYear = "";
+        String rating = "";
+        if (releaseYearComboBox.getSelectionModel().getSelectedItem() != null)
+            releaseYear = releaseYearComboBox.getSelectionModel().getSelectedItem().toString();
+        if (ratingComboBox.getSelectionModel().getSelectedItem() != null)
+            rating = ratingComboBox.getSelectionModel().getSelectedItem().toString();
 
-        applyAllFilters(searchQuery, genre);
-        sortMovies(sortedState);
+        applyAllFilters(searchQuery, genre, releaseYear, rating);
+
+        if(sortedState != SortedState.NONE) {
+            sortMovies();
+        }
     }
 
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
     }
+
+    public void resetBtnClicked(ActionEvent actionEvent) {
+        genreComboBox.setPromptText("Filter by Genre");
+        releaseYearComboBox.getSelectionModel().clearSelection();
+        searchField.clear();
+        ratingComboBox.getSelectionModel().clearSelection();
+
+    }
+
+    public long countMoviesFrom(List<Movie> movies, String director) {
+        return movies.stream()
+                .filter(movie -> movie.getDirectors().contains(director))
+                .count();
+    }
+
+    public int getLongestMovieTitle(List<Movie> movies) {
+        return movies.stream()
+                .map(Movie::getTitle)
+                .mapToInt(String::length)
+                .max()
+                .orElse(0);
+    }
+
+    public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endyear) {
+        return movies.stream()
+                .filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endyear)
+                .collect(Collectors.toList());
+    }
+
+    public String getMostPopularActor(List<Movie> movies) {
+        return movies.stream()
+                .flatMap(movie -> movie.getMainCast().stream())
+                .collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("");
+    }
+
 }
