@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.collections.FXCollections;
+
 
 import java.net.URL;
 import java.util.*;
@@ -42,6 +44,7 @@ public class HomeController implements Initializable {
     public JFXComboBox releaseYearComboBox;
 
     @FXML JFXComboBox ratingComboBox;
+
 
     @FXML
     public JFXButton sortBtn;
@@ -105,21 +108,25 @@ public class HomeController implements Initializable {
         }
     }
 
-    public List<Movie> filterByQuery(List<Movie> movies, String query){
-        if(query == null || query.isEmpty()) return movies;
+    public List<Movie> filterByQuery(List<Movie> movies, String query) {
+        // Check if the query is null or empty
+        if (query == null || query.isEmpty()) return movies;
 
-        if(movies == null) {
-            throw new IllegalArgumentException("movies must not be null");
+        // Check if the list of movies is null
+        if (movies == null) {
+            throw new IllegalArgumentException("Movies list must not be null");
         }
 
+        // Filter movies based on the search query (case-insensitive)
         return movies.stream()
                 .filter(Objects::nonNull)
                 .filter(movie ->
                         movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
                                 movie.getDescription().toLowerCase().contains(query.toLowerCase())
                 )
-                .toList();
+                .collect(Collectors.toList());
     }
+
 
     public List<Movie> filterByGenre(List<Movie> movies, Genre genre){
         if(genre == null) return movies;

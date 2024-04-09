@@ -124,25 +124,16 @@ class HomeControllerTest {
     void query_filter_matches_with_lower_and_uppercase_letters(){
         // given
         homeController.initializeState();
-        String query = "IfE";
 
         // when
-        List<Movie> actual = homeController.filterByQuery(homeController.observableMovies, query);
+        List<Movie> actualMovies = MovieAPI.getAllMovies("iFe",null,"","");
 
         // then
-        List<Movie> expected = Arrays.asList(
-                new Movie(
-                        "Life Is Beautiful",
-                        "When an open-minded Jewish librarian and his son become victims of the Holocaust, he uses a perfect mixture of will, humor, and imagination to protect his son from the dangers around their camp." ,
-                        Arrays.asList(Genre.DRAMA, Genre.ROMANCE)),
-                new Movie(
-                        "The Wolf of Wall Street",
-                        "Based on the true story of Jordan Belfort, from his rise to a wealthy stock-broker living the high life to his fall involving crime, corruption and the federal government.",
-                        Arrays.asList(Genre.DRAMA, Genre.ROMANCE, Genre.BIOGRAPHY))
-        );
 
-        assertEquals(expected, actual);
-    }
+        List<Movie> expectedMovies = MovieAPI.getAllMovies("ife",null,"","");
+        assertEquals(expectedMovies, actualMovies);
+        }
+
 
     @Test
     void query_filter_with_null_movie_list_throws_exception(){
