@@ -155,7 +155,6 @@ public class HomeController implements Initializable {
             }
         }
 
-        // Die Filterparameter an die MovieAPI übergeben
         List<Movie> filteredMovies = getAllMovies(
                 searchQuery,
                 selectedGenre,
@@ -163,7 +162,6 @@ public class HomeController implements Initializable {
                 (rating != null && !rating.isEmpty()) ? rating : null
         );
 
-        // Die observableMovies-Liste aktualisieren
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
@@ -190,10 +188,10 @@ public class HomeController implements Initializable {
     }
 
     public void resetBtnClicked(ActionEvent actionEvent) {
-        genreComboBox.setPromptText("Filter by Genre");
         releaseYearComboBox.getSelectionModel().clearSelection();
         searchField.clear();
         ratingComboBox.getSelectionModel().clearSelection();
+
 
     }
 
