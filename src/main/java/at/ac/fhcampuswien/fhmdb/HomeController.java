@@ -182,9 +182,7 @@ public class HomeController implements Initializable {
 
         applyAllFilters(searchQuery, genre, releaseYear, rating);
 
-        if(sortedState != SortedState.NONE) {
-            sortMovies();
-        }
+
     }
 
     public void sortBtnClicked(ActionEvent actionEvent) {
