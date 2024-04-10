@@ -8,6 +8,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.stream.Collectors;
 
@@ -41,8 +42,8 @@ public class MovieCell extends ListCell<Movie> {
                     .collect(Collectors.joining(", "));
             genre.setText("Genres: " + genres);
 
-            releaseYear.setText("Release Year: " + String.valueOf(movie.getReleaseYear()));
-            rating.setText("Rating: " + String.valueOf(movie.getRating()));
+            releaseYear.setText("Release Year: " + movie.getReleaseYear());
+            rating.setText("Rating: " + movie.getRating());
 
             // color scheme
             title.getStyleClass().add("text-yellow");
@@ -54,7 +55,8 @@ public class MovieCell extends ListCell<Movie> {
             layout.setBackground(new Background(new BackgroundFill(Color.web("#454545"), null, null)));
 
             // layout
-            title.fontProperty().set(title.getFont().font(20));
+            title.getFont();
+            title.fontProperty().set(Font.font(20));
             detail.setMaxWidth(this.getScene().getWidth() - 30);
             detail.setWrapText(true);
             layout.setPadding(new Insets(10));

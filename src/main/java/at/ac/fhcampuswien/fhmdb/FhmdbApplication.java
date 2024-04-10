@@ -1,7 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,16 +25,13 @@ public class FhmdbApplication extends Application {
 
         ObservableValue<Number> sceneWidth = stage.widthProperty();
 
-        sceneWidth.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                double newWidth = newValue.doubleValue() - 50;
-                for (Label title : titlesList) {
-                    title.setMaxWidth(newWidth);
-                }
-                for (Label detail : descriptionsList) {
-                    detail.setMaxWidth(newWidth);
-                }
+        sceneWidth.addListener((observable, oldValue, newValue) -> {
+            double newWidth = newValue.doubleValue() - 50;
+            for (Label title : titlesList) {
+                title.setMaxWidth(newWidth);
+            }
+            for (Label detail : descriptionsList) {
+                detail.setMaxWidth(newWidth);
             }
         });
     }

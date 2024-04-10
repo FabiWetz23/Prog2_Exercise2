@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import at.ac.fhcampuswien.fhmdb.api.MovieAPI;
 
-import java.util.Arrays;
+
 import java.util.List;
 
 import java.util.Comparator;
@@ -118,10 +118,10 @@ class HomeControllerTest {
     void query_filter_with_null_value_returns_unfiltered_list() {
         // given
         homeController.initializeState();
-        String query = null;
+
 
         // when
-        List<Movie> actual = homeController.filterByQuery(homeController.observableMovies, query);
+        List<Movie> actual = homeController.filterByQuery(homeController.observableMovies, null);
 
         // then
         assertEquals(homeController.observableMovies, actual);
@@ -131,10 +131,10 @@ class HomeControllerTest {
     void genre_filter_with_null_value_returns_unfiltered_list() {
         // given
         homeController.initializeState();
-        Genre genre = null;
+
 
         // when
-        List<Movie> actual = homeController.filterByGenre(homeController.observableMovies, genre);
+        List<Movie> actual = homeController.filterByGenre(homeController.observableMovies, null);
 
         // then
         assertEquals(homeController.observableMovies, actual);
@@ -144,7 +144,7 @@ class HomeControllerTest {
     void genre_filter_returns_all_movies_containing_given_genre() {
         // given
         homeController.initializeState();
-        Genre genre = Genre.DRAMA;
+
 
         // when
         List<Movie> actualMovies = MovieAPI.getAllMovies("",Genre.DRAMA,"","");
