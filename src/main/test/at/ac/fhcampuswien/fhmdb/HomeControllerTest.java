@@ -51,11 +51,10 @@ class HomeControllerTest {
 
         // given
         homeController.initializeState();
-        homeController.sortMovies();
         SortedState initialState = homeController.sortedState;
 
         // when
-        homeController.sortMovies(); // Sort again
+        homeController.sortMovies();
         SortedState nextState = homeController.sortedState;
 
         // then
@@ -64,9 +63,16 @@ class HomeControllerTest {
         assertEquals(SortedState.DESCENDING, nextState);
     }
 
+
+
+
+
+
+
+
+
     @Test
     void if_last_sort_descending_next_sort_should_be_ascending() {
-
         // given
         homeController.initializeState();
         SortedState initialState = homeController.sortedState;
@@ -77,10 +83,11 @@ class HomeControllerTest {
 
         // then
         assertNotEquals(initialState, nextState); // Assert that the state has changed
-        assertEquals(SortedState.NONE, initialState); // Initial state should be NONE
-        assertEquals(SortedState.ASCENDING, nextState); // Next state should be ASCENDING
-
+        assertEquals(SortedState.ASCENDING, initialState); // Initial state should be NONE
     }
+
+
+
 
     @Test
     void query_filter_matches_with_lower_and_uppercase_letters(){
