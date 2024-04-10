@@ -163,6 +163,57 @@ class HomeControllerTest {
         // then
         assertEquals(homeController.allMovies, homeController.observableMovies);
     }
+    @Test
+    void testCountMoviesFrom() {
+        // Arrange
+        HomeController homeController1 = new HomeController();
+        List<Movie> movies = MovieAPI.getAllMovies("",null,"","");
+
+        // Act
+        long count = homeController1.countMoviesFrom(movies, "Steven Spielberg");
+
+        // Assert
+        assertEquals(2, count);
+    }
+
+    @Test
+    void testGetLongestMovieTitle() {
+        // Arrange
+        HomeController homeController1 = new HomeController();
+        List<Movie> movies = MovieAPI.getAllMovies("",null,"","");
+
+        // Act
+        int longestTitle = homeController1.getLongestMovieTitle(movies);
+
+        // Assert
+        assertEquals(46, longestTitle); // Length of "Movie2"
+    }
+
+    @Test
+    void testGetMoviesBetweenYears() {
+        // Arrange
+       HomeController homeController1 = new HomeController();
+        List<Movie> movies = MovieAPI.getAllMovies("",null,"","");
+
+        // Act
+        List<Movie> filteredMovies = homeController1.getMoviesBetweenYears(movies, 1995, 2005);
+
+        // Assert
+        assertEquals(10, filteredMovies.size());
+    }
+
+    @Test
+    void testGetMostPopularActor() {
+        // Arrange
+        HomeController homeController1 = new HomeController();
+        List<Movie> movies = MovieAPI.getAllMovies("",null,"","");
+
+        // Act
+        String mostPopularActor = homeController1.getMostPopularActor(movies);
+
+        // Assert
+        assertEquals("leonardo dicaprio", mostPopularActor.toLowerCase());
+    }
 
 }
 
